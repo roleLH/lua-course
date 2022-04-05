@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>atto</title>
+        <meta charset="utf-8">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="application-name" content="atto - code ur dreams">
+        <meta name="theme-color" content="#ffffff">
+        <meta property="og:title" content="atto - code ur dreams">
+        <meta property="og:image" content="https://jamesl.me/atto/media/cover.png">
+        <meta property="og:image:type" content="image/png">
+        <link rel="icon" href="media/logo.png">
+        <link rel="manifest" href="manifest.webmanifest">
+        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="style.css">
+        <!-- HTML -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css">
+        <script src="lib/showdown.min.js"></script>
+        <script src="./lib/jquery-3.6.0.js"></script>
+        <!-- <script src="docs.js"></script> -->
+        <script src="lib/editor/lib/codemirror.js"></script>
+        <link rel="stylesheet" href="lib/editor/lib/codemirror.css">
+        <script src="lib/editor/addon/edit/matchbrackets.js"></script>
+        <script src="lib/editor/addon/edit/closebrackets.js"></script>
+        <!-- <script src="lib/editor/addon/fold/foldgutter.js"></script> -->
+        <script src="lib/editor/addon/selection/active-line.js"></script>
+        <script src="lib/editor/mode/lua/lua.js"> </script>
+        <script src="lib/highlight/highlight.js"></script>
+        <script type="module" src="./dist/test.js"></script>
+        <script src="lib/lua/lua_emcc.js"></script>
+        <script src="lib/highlight/languages/lua.min.js"></script>
+        <link rel="stylesheet" href="lib/highlight/styles/a11y-dark.min.css">
+        <!-- <script type="module" src="src/init.js"></script> -->
+        <!-- <script src="lib/react/react.development.js"></script>
+        <script src="lib/react/react-dom.development.js"></script> -->
+    </head>
+    <body>
+        <div id = "exam">
+            <div id="descriptor"></div>
+            <div id="editor"></div> 
+        </div>
+        <!-- <div id="term_wrap">
+            <div id="term_container">
+            </div>
+            <div id="term_bar">
+              <progress id="net_progress">
+              </progress>
+            </div>
+        </div> -->
+        <!-- <div id="docs">
+            <div id="docsButtons">
+                <button onclick="toggleDocumentation();" aria-label="Close help guide" title="Close help guide">
+                    <img src="media/icons/close.svg">
+                </button>
+                <button onclick="visitDocumentation('docs/index.md');" aria-label="Visit guide home" title="Visit guide home">
+                    <img src="media/icons/home.svg">
+                </button>
+                <button onclick="popOutDocumentation();" aria-label="Pop out guide into new tab" title="Pop out guide into new tab">
+                    <img src="media/icons/popout.svg">
+                </button>
+            </div>
+            <div id="docsContent"></div>
+        </div> -->
+
+    </body>
+</html>

@@ -94,7 +94,7 @@ function load_css_style(name, cb) {
 
 THEMES.forEach((theme) => {
   load_css_style(theme, () => {
-    console.log("load success", theme);
+//    console.log("load success", theme);
   })
 })
 
@@ -126,6 +126,7 @@ class ExecutorUI extends BaseUI {
     let button = createElement("button", "run");
     button.innerText = "run";
     this.rootNode = button;
+
   }
   /**
    * 
@@ -134,6 +135,16 @@ class ExecutorUI extends BaseUI {
   onClick(fn) {
     let button = this.rootNode;
     button.onclick = fn;
+  }
+
+  disable() {
+    
+    this.rootNode.setAttribute("disabled", "disable");
+    this.rootNode.classList.add("disabled")
+  }
+  enable() {
+    this.rootNode.removeAttribute("disabled");
+    this.rootNode.classList.remove("disabled")
   }
 }
 
@@ -193,23 +204,12 @@ class EditorUI extends BaseUI {
     this.lines = {}
   }
 
-  init() {
-    // let node = createElement("div", "codeeditor");
-    // this.editor = CodeMirror(node, {
-    //   value: "123456",
-    //   lineNumbers: true,
-    //   mode: "lua",
-    //   styleActiveLine: true,
-    //   matchBrackets: true
-    // });
-    // this.rootNode = node;  
-  }
+
 
   renderTo(node) {
     let n = createElement("div", "codeeditor");
     node.appendChild(n);
     this.editor = CodeMirror(n, {
-      value: "123456",
       lineNumbers: true,
       mode: "lua",
       styleActiveLine: true,
@@ -242,6 +242,13 @@ class EditorUI extends BaseUI {
   value() {
     return this.editor.getValue();
   }
+  /**
+   * 
+   * @param {String} text 
+   */
+  setValue(text) {
+    this.editor.setValue(text);
+  }
 }
 
 class IDEUI { 
@@ -253,7 +260,7 @@ class IDEUI {
   }
 
   init() {
-    this.editorui.init();
+    // this.editorui.init();
     this.setting.init();
     this.editorstyle.init();
     let executorui = new ExecutorUI();
@@ -265,6 +272,13 @@ class IDEUI {
     })
     this.editorstyle.onClick((style) => {
       this.editorui.setStyle(style);
+    })
+
+    GCore.on("run_code", (data) => {
+      executorui.disable();
+    })
+    GCore.on("run_result", (data) => {
+      executorui.enable();
     })
     
     this.setting.pushWidget("executor", executorui);

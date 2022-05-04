@@ -77,6 +77,12 @@ class Window {
   addChild(node) {
     this.content.appendChild(node);
   }
+  delChild(node) {
+    this.content.removeChild(node);
+  }
+  replaceChild(node, child) {
+    this.content.replaceChild(node, child);
+  }
 
   kill() {
     if(this.onclosecb) {

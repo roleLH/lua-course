@@ -1,35 +1,46 @@
 
 import visitDocumentation from "../docs";
 import GCore from "./core";
+import ResultUI from "./ui/result";
 
-/**
- * fetch('http://example.com/movies.json')
-  .then(response => response.json())
-  .then(data => console.log(data));
- */
+let solve_code = `
+function solve(input) 
+  return 0
+end`
 
-let GInputs = null;
-let load_inputs = (cb) => {
-  fetch("docs/question_inputs/inputs.json")
-  .then(response => response.json())
-  .then((data) => {
-    GInputs = data;
-  })
-}
-if(!GInputs) {
-  load_inputs();
-}
 
-let _get_cur_inputs = (qid) => {
-  let inputs = GInputs[qid];
-  if(!inputs) { return ;}
-  return inputs.io;
-}
 
-let _gen_test_code = (id, input, output) => {
-  return `local ret = solve(${input})
-  local is_same = __is_same(ret, ${output}) and 1 or 0
-  __scall("collectCodeRet", ${id}, is_same)`;
+const INPUT_URL = "docs/question_inputs/inputs.json";
+
+class Inputs {
+  constructor() {
+    this.data = null;
+  }
+  async init() {
+    const response = await fetch(INPUT_URL);
+    const data = await response.json();
+    this.data = data;
+    return true;
+  }
+
+  /**
+   * 
+   * @param {Number} qid 
+   * @returns {Array}
+   */
+  getInputs(qid) {
+    let ios = this.data[qid];
+    return ios && ios.io;
+  }
+
+  /**
+   * 
+   * @returns {Number}
+   */
+  length() {
+    return this.data.length;
+  }
+
 }
 
 /**
@@ -39,16 +50,50 @@ let _gen_test_code = (id, input, output) => {
 class Exam {
   constructor() {
     this.questionid = 0;
-    this.node = document.querySelector("#descriptor");
+    this.node = document.querySelector("#descriptor");    
+    this.inputs = new Inputs();
+  }
+
+  async init() {
+    let ret = await this.inputs.init();
+    GCore.on("run_code", (data) => {
+      let code = data.code;
+      if (!code) {
+        return;
+      } 
+      // code = "solve = nil \n" + code;
+      GCore.emit("compile_req", {code});
+    });
+    GCore.on("compile_rsp", (data) => {
+      if(data && data.result === true) {
+        let ios = this.inputs.getInputs(this.questionid);
+        return GCore.emit("run_example_req", {examples: ios})
+      }
+      GCore.emit("run_result", data);
+    });
+    GCore.on("run_result", (data) => {
+      console.log(data);
+      if(data.result) {
+        GCore.emit(data.result, data);
+      }
+    })
+
+    GCore.on("next_question", (data) => {
+      this.removeCurQuestionDescription();
+      this.nextQuestion();
+      this.visitCurQuestion();
+    })
   }
 
   hasNextQuestion() {
-    return true;
+    let len = this.inputs.length();
+    return this.questionid + 1 < len;
   }
 
   nextQuestion() {
     if(this.hasNextQuestion()) {
       this.questionid++;
+      return true;
     }
   }
 
@@ -57,25 +102,12 @@ class Exam {
     visitDocumentation(url, this.node);
   }
 
-  vmRunExamples(luavm) {
-    let ios = _get_cur_inputs(this.questionid);
-    for(let i = 0; i < ios.length; i++) {
-      let test = ios[i];
-      let code = _gen_test_code(i, test[0], test[1]);
-      let ret = luavm.run(code);
-      if(ret != 0) {
-        GCore.emit("code_error", {
-          text: `run test error. question:${this.questionid}, eg:${i}`
-        })
-      }
-    }
-  }
-  putResult(id, ret) {
-   
+  removeCurQuestionDescription() {
+    this.node.removeChild(this.node.childNodes[0]);
   }
 
   getQuestionTest(questionid, testid) {
-    let ios = _get_cur_inputs(questionid || this.questionid);
+    let ios = this.inputs.getInputs(questionid || this.questionid);
     if(!ios) { return; }
     return ios[testid];
   }

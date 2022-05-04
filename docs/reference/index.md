@@ -1,8 +1,8 @@
-[Guide](/index.md) 🢒 **Command reference**
+[Guide](/index.md) / **Command reference**
 
-This reference guide contains a listing of all commands, functions, constants and operators that are available in atto which you can use to write your program. They are split up into different categories, as shown below.
 
 <h1 class="reference"><a href="/reference/logic.md" class="control">逻辑操作符</a></h1>
+
 `not`, `and`, `or`
 
 <h1 class="reference"><a href="/reference/compare.md" class="io">比较操作符</a></h1>

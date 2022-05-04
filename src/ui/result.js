@@ -1,77 +1,350 @@
 import {BaseUI, createElement} from "./baseui"
-import Term from "../term";
 import Window from "./window";
+import GCore from "./../core"
 
-/**
- * succeed
- * <svg viewBox="64 64 896 896" focusable="false" data-icon="check-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm193.5 301.7l-210.6 292a31.8 31.8 0 01-51.7 0L318.5 484.9c-3.8-5.3 0-12.7 6.5-12.7h46.9c10.2 0 19.9 4.9 25.9 13.3l71.2 98.8 157.2-218c6-8.3 15.6-13.3 25.9-13.3H699c6.5 0 10.3 7.4 6.5 12.7z"></path></svg>
- * failed
- * <svg viewBox="64 64 896 896" focusable="false" data-icon="close-circle" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm165.4 618.2l-66-.3L512 563.4l-99.3 118.4-66.1.3c-4.4 0-8-3.5-8-8 0-1.9.7-3.7 1.9-5.2l130.1-155L340.5 359a8.32 8.32 0 01-1.9-5.2c0-4.4 3.6-8 8-8l66.1.3L512 464.6l99.3-118.4 66-.3c4.4 0 8 3.5 8 8 0 1.9-.7 3.7-1.9 5.2L553.5 514l130 155c1.2 1.5 1.9 3.3 1.9 5.2 0 4.4-3.6 8-8 8z"></path></svg>
- */
 
+const loading_svg_str = `
+<!-- By Sam Herbert (@sherb), for everyone. More @ http://goo.gl/7AJzbL -->
+<svg width="58" height="58" viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" fill-rule="evenodd">
+        <g transform="translate(2 1)" stroke="#FFF" stroke-width="1.5">
+            <circle cx="42.601" cy="11.462" r="5" fill-opacity="1" fill="#fff">
+                <animate attributeName="fill-opacity"
+                     begin="0s" dur="1.3s"
+                     values="1;0;0;0;0;0;0;0" calcMode="linear"
+                     repeatCount="indefinite" />
+            </circle>
+            <circle cx="49.063" cy="27.063" r="5" fill-opacity="0" fill="#fff">
+                <animate attributeName="fill-opacity"
+                     begin="0s" dur="1.3s"
+                     values="0;1;0;0;0;0;0;0" calcMode="linear"
+                     repeatCount="indefinite" />
+            </circle>
+            <circle cx="42.601" cy="42.663" r="5" fill-opacity="0" fill="#fff">
+                <animate attributeName="fill-opacity"
+                     begin="0s" dur="1.3s"
+                     values="0;0;1;0;0;0;0;0" calcMode="linear"
+                     repeatCount="indefinite" />
+            </circle>
+            <circle cx="27" cy="49.125" r="5" fill-opacity="0" fill="#fff">
+                <animate attributeName="fill-opacity"
+                     begin="0s" dur="1.3s"
+                     values="0;0;0;1;0;0;0;0" calcMode="linear"
+                     repeatCount="indefinite" />
+            </circle>
+            <circle cx="11.399" cy="42.663" r="5" fill-opacity="0" fill="#fff">
+                <animate attributeName="fill-opacity"
+                     begin="0s" dur="1.3s"
+                     values="0;0;0;0;1;0;0;0" calcMode="linear"
+                     repeatCount="indefinite" />
+            </circle>
+            <circle cx="4.938" cy="27.063" r="5" fill-opacity="0" fill="#fff">
+                <animate attributeName="fill-opacity"
+                     begin="0s" dur="1.3s"
+                     values="0;0;0;0;0;1;0;0" calcMode="linear"
+                     repeatCount="indefinite" />
+            </circle>
+            <circle cx="11.399" cy="11.462" r="5" fill-opacity="0" fill="#fff">
+                <animate attributeName="fill-opacity"
+                     begin="0s" dur="1.3s"
+                     values="0;0;0;0;0;0;1;0" calcMode="linear"
+                     repeatCount="indefinite" />
+            </circle>
+            <circle cx="27" cy="5" r="5" fill-opacity="0" fill="#fff">
+                <animate attributeName="fill-opacity"
+                     begin="0s" dur="1.3s"
+                     values="0;0;0;0;0;0;0;1" calcMode="linear"
+                     repeatCount="indefinite" />
+            </circle>
+        </g>
+    </g>
+</svg>
+`;
+
+let succeed_icon = createElement("div", "icon_success");
+succeed_icon.innerHTML = "✓";
+let failed_icon = createElement("div", "icon_failed");
+failed_icon.innerHTML = "✖";
+let loading_icon = createElement("div", "icon_loading");
+loading_icon.innerHTML = loading_svg_str;
+
+const STATE = {
+  loading:  0,
+  success:  1,
+  failed:   2,
+  syntax_error: 3,
+  runtime_error: 4,
+  timeout: 5,
+}
+
+let state_to_icon = (state) => {
+  switch(state) {
+    case STATE.loading: return loading_icon;
+    case STATE.success: return succeed_icon;
+    default: return failed_icon; 
+
+  }
+}
 
 class ResultUI extends BaseUI {
   constructor() {
     super();
-    this.term = null;
     this.window = null;
     this.state = "hide";
     this.rootNode = createElement("div", "term_container");
     
+    this.state = STATE.loading;
     this.icon = null;
     this.content = null;
   }
 
   init() {
-    this.term = new Term({
-      cols: 80,
-      rows: 30,
-      scrollback: 10000,
-      fontSize: 15
-    });
+    let node = document.querySelector("body");
+    this.renderTo(node);
+
     this.window = new Window("result", "result");
-    let div = createElement("div", "term_container");
-    this.window.addChild(div);
+    this.icon = createElement("div", "icon");
+    this.icon.appendChild(loading_icon);
+    this.content = createElement("div", "div");
+    this.window.addChild(this.icon);
+    this.window.addChild(this.content);
+
     this.window.onClose(() => {
       this.hide();
     })
     this.rootNode.appendChild(this.window.section);
-    this.term.open(div);
-    this.hide();
+    // this.hide();
   }
 
-  render() {
-    let node = document.querySelector("body");
-    this.renderTo(node);
+  clearContent() {
+    this.window.delChild(this.content);
   }
 
-  hide() {
-    this.rootNode.hidden = true
+  /**
+   * 
+   * @param {} info {
+   *  state: 0, 1, 2, 3, 4,
+   *  title: "",
+   *  class: "",
+   *  extra_info: () => {}
+   * }
+   */
+  switchResult(info) {
+    let old_icon = state_to_icon(this.state);
+    let new_icon = state_to_icon(info.state);
+    this.icon.replaceChild(new_icon, old_icon);
+
+    let content = createElement("div", "result");
+    let title = createElement("h3", "result_title");
+    if(info.title) {
+      title.innerText = info.title;
+    }
+    if(info.class) {
+      title.classList.add(info.class);
+    }
+    let extra = info.extra_info ? info.extra_info() : null;
+    content.appendChild(title);
+    if(extra) {
+      content.appendChild(extra);
+    }
+    this.window.replaceChild(content, this.content);
+    this.content = content;
+    this.state = info.state;
   }
-  show() {
-    this.rootNode.hidden = false;
-  //  this.init();
+
+  loading() {
+    let info = {
+      state: STATE.loading,
+      title: "Loading",
+    }
+    this.switchResult(info);
+  }
+  success() {
+    let info = {
+      state: STATE.success,
+      title: "Accepted",
+      class: "success",
+      extra_info: () => {
+        let div = createElement("div");
+        let next_text = createElement("p", "next_text");
+        next_text.innerText = "一鼓作气！下一题！"
+    
+        let next_btn = createElement("button", "next_question");
+        next_btn.innerText = "next";
+        next_btn.onclick = (e) => {
+          GCore.emit("next_question");
+        }
+        div.appendChild(next_text);
+        div.appendChild(next_btn);
+        return div;
+      }
+    };
+    this.switchResult(info);
+  }
+
+  timeout() {
+    let info = {
+      state: STATE.timeout,
+      title: "Time Limited",
+      class: "failed",
+      extra_info: () => {
+        let div = createElement("div");
+        let next_text = createElement("p", "timeout");
+        next_text.innerText = "抱歉, 超时!"
+        div.appendChild(next_text);
+        return div;
+      }
+    };
+    this.switchResult(info);
+  }
+
+  /**
+   * 
+   * @param {Array} error_info 
+   */
+  syntax_error(error_info) {
+    let info = {
+      state: STATE.syntax_error,
+      title: "Compile Error",
+      class: "failed",
+      extra_info: () => {
+        let div = createElement("div", "debug_info");
+        let str = "";
+        error_info.forEach((info) => {
+          str = str + info + "\n";
+        })
+        let code = createElement("code");
+        code.innerText = str;
+        
+        div.appendChild(code);
+        return div;
+      }
+    };
+    this.switchResult(info);
+  }
+
+  /**
+   * 
+   * @param {Array} error_info 
+   */
+  runtime_error(error_info) {
+    let info = {
+      state: STATE.runtime_error,
+      title: "Runtime Error",
+      class: "failed",
+      extra_info: () => {
+        let div = createElement("div", "debug_info");
+        let str = "";
+        error_info.forEach((info) => {
+          str = str + info + "\n";
+        })
+        let code = createElement("code");
+        code.innerText = str;
+        
+        div.appendChild(code);
+        return div;
+      }
+    };
+    this.switchResult(info);
+  }
+
+  wrong_answer(error_info) {
+    let info = {
+      state: STATE.failed,
+      title: "Wrong Answer",
+      class: "failed",
+      extra_info: () => {
+        let div = createElement("div", "debug_info");
+        let wrong_msg = createElement("div", "wrong_msg")
+        wrong_msg.innerText = "错误的样例:"
+      
+        let str = "";
+        error_info.forEach((info) => {
+          str = str + info + "\n";
+        })
+        let code = createElement("code");
+        code.innerText = str;
+        
+        div.appendChild(wrong_msg);
+        div.appendChild(code);
+        return div;
+      }
+    };
+    this.switchResult(info);
+  }
+
+  something(something_info) {
+    let info = {
+      state: STATE.success,
+      title: "INFO",
+      class: "success",
+      extra_info: () => {
+        let div = createElement("div", "debug_info");
+        let str = "";
+        something_info.forEach((info) => {
+          str = str + info + "\n";
+        })
+        let code = createElement("code");
+        code.innerText = str;
+        
+        div.appendChild(code);
+        return div;
+      }
+    };
+    this.switchResult(info);
   }
 
 }
 
-export default ResultUI 
 
 /**
- * @note
- * ------luavm------
- * (js -> lua) vm.call("lua code")
  * 
- * (lua -> js) system.call("json ?")
- * -----------------
- * FILE: test.lua
- * game.init(function() 
- *  
- * end)
- * game.update(function() 
- * 
- * end)
- * game.render(function() 
- * 
- * end)
+ * @param {ResultUI} result 
  */
+ function init_result(result) {
+  GCore.on("accepted", (data) => {
+    console.log(data);
+    result.success();
+  });
+  GCore.on("wrong", (data) => {
+    console.log(data)
+    result.wrong_answer(data.error_info);
+  })
+  GCore.on("runtime", (data) => {
+    console.log(data)
+    result.runtime_error(data.error_info || []);
+  })
+  GCore.on("timeout", (data) => {
+    console.log(data)
+    result.timeout(data);
+  })
+  GCore.on("compile", (data) => {
+    console.log(data)
+    result.syntax_error(data.error_info);
+  })
+  // GCore.on("compile", (data) => {
+  //   console.log(data)
+  //   result.something(data);
+  // })
+  GCore.on("loading", (data) => {
+    result.loading();
+  })
+}
+
+
+let GResultUI = new ResultUI()
+GResultUI.init();
+GResultUI.hide();
+
+GCore.on("run_code", (data) => {
+  if(GResultUI.ishide()) {
+    GResultUI.show();
+  }
+});
+GCore.on("next_question", (data) => {
+  GResultUI.hide();
+});
+
+init_result(GResultUI);
+
+export default GResultUI 

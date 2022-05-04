@@ -198,7 +198,6 @@ function visitDocumentation(path, parentNode) {
             let hljs = window.hljs || hljs;
             hljs.highlightElement(element)
         });
-
         parentNode.appendChild(doc)
     });
 }

@@ -24,4 +24,15 @@ export class BaseUI {
   renderTo(node) {
     node.appendChild(this.rootNode);
   }
+
+  hide() {
+    this.rootNode.hidden = true;
+  }
+  show() {
+    this.rootNode.hidden = false;
+  }
+
+  ishide() {
+    return this.rootNode.hidden;
+  }
 }

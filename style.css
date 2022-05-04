@@ -149,11 +149,11 @@ body.notSupported h1 {
     font-family: "Brass Mono", monospace;
 }
 
-canvas {
+/* canvas {
     position: absolute;
     background-color: #eeeeee;
     border-radius: 10px;
-}
+} */
 
 body.fullscreen canvas {
     border-radius: 0;
@@ -231,7 +231,21 @@ button {
     transition: 0.5s opacity;
     cursor: pointer;
 }
-
+button.disabled {
+    padding: 10px;
+    background-color: var(--darkBlue);
+    color: var(--white);
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    opacity: 0.8;
+    transition: 0.5s opacity;
+    cursor: not-allowed;
+}
+button:hover.disabled {
+    background-color: var(--darkBlue);
+    opacity: 0.8;
+}
 button:hover {
     opacity: 0.8;
 }
@@ -729,7 +743,7 @@ h1.reference a.comparators {
 /* ----------------- */
 .window {
     position: absolute;
-    background-color: hsl(201deg 24% 14%);
+    background-color: rgb(190, 202, 208);
     border: 1px hsla(198, 20%, 20%, 1) solid;
     font-family: 'IBM Plex Sans Condensed', sans-serif;
   }
@@ -778,4 +792,72 @@ h1.reference a.comparators {
     overflow: auto;
   }
   
+#icon {
+    text-align: center;
+    font-size: 58px;
+}
+#icon_success {
+    color: #3ea653;
+}
+#icon_failed {
+    color: #db3d3d;
+}
+#result {
+    text-align: center;
+}
+#result .success {
+    color: #3ea653;
+}
+#result .failed {
+    color: #db3d3d;
+}
 /* ----------------------- */
+
+table.paleBlueRows {
+    border: 1px solid #FFFFFF;
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+  }
+  table.paleBlueRows td, table.paleBlueRows th {
+    border: 0px solid #FFFFFF;
+    padding: 3px 2px;
+  }
+
+  table.paleBlueRows tr:nth-child(even) {
+    background: #D0E4F5;
+  }
+  table.paleBlueRows thead {
+    background: #0B6FA4;
+    border-bottom: 5px solid #FFFFFF;
+  }
+  table.paleBlueRows thead th {
+    font-weight: bold;
+    color: #FFFFFF;
+    text-align: center;
+    border-left: 2px solid #FFFFFF;
+  }
+  table.paleBlueRows thead th:first-child {
+    border-left: none;
+  }
+  
+  /* ----------------- */
+
+
+  canvas {
+      width: 512px;
+      height: 512px;
+  }
+
+  #debug_info {
+      text-align: left;
+      background-color: #000000;
+  }
+  #debug_info code {
+      background-color: #000000;
+      color: #D0E4F5;
+  }
+
+  #wrong_msg {
+    color: #D0E4F5;
+  }

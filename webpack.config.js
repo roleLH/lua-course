@@ -1,6 +1,7 @@
 "use strict";
 
 const webpack = require('webpack');
+require('babel-polyfill');
 
 module.exports = [
 	{
@@ -23,6 +24,7 @@ module.exports = [
 				{
 					test: [/\.js$/],
 					loader: 'babel-loader',
+					// plugins: ["@babel/plugin-transform-runtime"],
 					options: {
 						presets: [['@babel/preset-env', {
 							"targets": {
@@ -33,12 +35,13 @@ module.exports = [
 				}
 			]
 		},
+
 		plugins: [
 			new webpack.DefinePlugin({
 				"process.env.FENGARICONF": "void 0",
 				"typeof process": JSON.stringify("undefined")
 			})
-		]
+		],
 	},
 	// {
 	// 	/*

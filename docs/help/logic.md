@@ -1,6 +1,5 @@
-[Guide](/index.md) / [Command reference](/reference/index.md) / **逻辑运算符**
+**逻辑运算符**
 
-逻辑运算符和 控制结构（TODO: link）一样，所有的逻辑操作符会把 false 和 nil 作为假，而其他的一切作为真
 ## `not` 
 `not E`  
 如果not后的表达式 **E** 为真，那么 `not E` 返回 `false`；反之，  

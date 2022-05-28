@@ -13,12 +13,12 @@ module.exports = [
 		target: 'web',
 		output: {
 			filename: 'test.js',
-			library: 'fengari',
+			library: 'course',
 			libraryTarget: 'umd'
 		},
 		devtool: 'inline-source-map',
 		node: false,
-    mode: "development",
+    mode: "production",
 		module: {
 			rules: [
 				{

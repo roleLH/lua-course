@@ -273,21 +273,22 @@ class ResultUI extends BaseUI {
     this.switchResult(info);
   }
 
-  something(something_info) {
+  advance(something_info) {
     let info = {
       state: STATE.success,
-      title: "INFO",
+      title: "解锁成就: 新世界的大门!",
       class: "success",
       extra_info: () => {
-        let div = createElement("div", "debug_info");
-        let str = "";
-        something_info.forEach((info) => {
-          str = str + info + "\n";
-        })
-        let code = createElement("code");
-        code.innerText = str;
-        
-        div.appendChild(code);
+        let div = createElement("div");
+        let next_text = createElement("button");
+        next_text.innerText = "开始进阶教程"
+        next_text.onclick = () => {
+          GCore.emit("advance_open")
+        }
+        let p = createElement("p");
+        p.innerText = "暂无, 期待下...."
+        div.appendChild(next_text);
+        div.appendChild(p);
         return div;
       }
     };
@@ -328,6 +329,13 @@ class ResultUI extends BaseUI {
   // })
   GCore.on("loading", (data) => {
     result.loading();
+  })
+
+  GCore.on("advance", (data) => {
+    if(result.ishide()) {
+      result.show();
+    }
+    result.advance([]);
   })
 }
 

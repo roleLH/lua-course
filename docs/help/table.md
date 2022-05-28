@@ -62,6 +62,6 @@ for k, v in pairs(map) do
 end
 
 ```
-最后, table的key可以是任意的非**nil**值. 
+最后, table的key可以是任意的非**nil**值.   
 PS: 你可以打开任意一个配置生成的config2里的lua文件, 然后尝试去读一读, 这应该是最顺手而且简单的例子. 
 

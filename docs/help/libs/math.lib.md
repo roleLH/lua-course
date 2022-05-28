@@ -1,3 +1,6 @@
+<a id = "help" href = "help/lib.md">index</a>  
+
+
 ### math
 常用
 #### math.abs(x) 返回x的绝对值

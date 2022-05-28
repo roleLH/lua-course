@@ -39,12 +39,12 @@ for k, v in pairs(your_table) do
   -- do something
 end
 ```
-其中 `k` 为`table`中的一个键值, `v`表示该键所对应的值.
+其中 `k` 为`table`中的一个键, `v`表示该键所对应的值.
 或者当你需要按照顺序遍历一个数组形式的`table`时, 
 ```lua
 for idx, value in ipairs(your_list) do 
   -- do something
 end
 ```
-`pairs`可以遍历所有的`table`, 只是无法保证遍历的顺序, 
+`pairs`可以遍历所有的`table`, 只是无法保证遍历的顺序,   
 `ipairs`只能用来遍历数组形式的`table`, 是可以保证顺序的.

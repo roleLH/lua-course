@@ -1,3 +1,6 @@
+<a id = "help" href = "help/lib.md">index</a>  
+
+
 ### string
 常用
 #### string.format(formatstring, ···)

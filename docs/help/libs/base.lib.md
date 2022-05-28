@@ -1,15 +1,9 @@
+
+<a id = "help" href = "help/lib.md">index</a>  
+
 #### base
 常用
 #### ipairs(t)
-
-```
-```
-
-
-
-
-[Guide](/index.md) / [Command reference](/reference/index.md) / **函数库**  
-
 
 ## `ipairs(t) -> itorFunction, t, 0`  
 函数参数是一个表t  

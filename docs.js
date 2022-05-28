@@ -181,6 +181,9 @@ function visitDocumentation(path, parentNode) {
                 return;
             }
             element.onclick = (e) => {
+                if(element.id === "help" && window.GCore) {
+                    return window.GCore.emit("help", {url: "docs/" + destination});
+                }
                 parentNode.removeChild(container);
                 visitDocumentation("docs/" + destination, parentNode);
             }

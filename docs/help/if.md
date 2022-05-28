@@ -1,4 +1,12 @@
 ### if
+
+**if** 语句的基本格式如下:
+```lua
+if cond then 
+  block
+end
+```
+只有当条件 *cond* 满足的时候, *block* 里的内容才会执行.  
 ```lua
 if health <= 10 then 
   say(player, "help me!")
@@ -17,17 +25,16 @@ elseif season == "spring" and need_show_boss2 then
   show_boss2()
 end
 
-
 ```
-**if** 语句的基本格式如下:
+当然, 也可以加一个 **else**, 表示不满足的时候执行某些其他内容.  
 ```lua
 if cond then 
   block
+else
+  other_block
 end
 ```
-只有当条件 *cond* 满足的时候, *block* 里的内容才会执行.  
-当然, 也可以加一个 **else**, 表示不满足的时候执行某些其他内容.  
-**elseif** 提供了一种可以连续判断的手段. 比如  
+也可以使用**elseif**, 这提供了一种可以连续判断的手段. 比如  
 ```lua
 --[[
   90-100 打印A

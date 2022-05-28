@@ -44,14 +44,36 @@ class Inputs {
 }
 
 /**
+ * 
+ * @param {Number} qid 
+ */
+let _save_qid = (qid) => {
+  localStorage.setItem("question_id", qid.toString())
+}
+
+let _get_qid = () => {
+  let qid = localStorage.getItem("question_id")
+  if(qid) {
+    return Number(qid);
+  }
+  return 0;
+}
+
+GCore.on("reset_qid", (data) => {
+  _save_qid(0);
+})
+
+/**
  * @note 
  * run_example.lua
  */
 class Exam {
   constructor() {
-    this.questionid = 0;
+    this.questionid = _get_qid();
     this.node = document.querySelector("#descriptor");    
     this.inputs = new Inputs();
+    this.resultcodes = new Array();
+    this.code = null;
   }
 
   async init() {
@@ -63,6 +85,7 @@ class Exam {
       } 
       // code = "solve = nil \n" + code;
       GCore.emit("compile_req", {code});
+      this.code = code;
     });
     GCore.on("compile_rsp", (data) => {
       if(data && data.result === true) {
@@ -79,10 +102,17 @@ class Exam {
     })
 
     GCore.on("next_question", (data) => {
+      if(!this.hasNextQuestion()) {
+        return GCore.emit("finish");
+      }
       this.removeCurQuestionDescription();
       this.nextQuestion();
       this.visitCurQuestion();
     })
+    GCore.on("accepted", () => {
+      this.resultcodes[this.questionid] = this.code;
+    })
+
   }
 
   hasNextQuestion() {
@@ -93,6 +123,7 @@ class Exam {
   nextQuestion() {
     if(this.hasNextQuestion()) {
       this.questionid++;
+      _save_qid(this.questionid);
       return true;
     }
   }

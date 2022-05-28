@@ -1,3 +1,6 @@
+<a id = "help" href = "help/lib.md">index</a>  
+
+
 ### table
 常用
 #### table.insert(list, [pos], value)

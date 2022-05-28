@@ -4,6 +4,7 @@ import GJudgeSystem from './judge_system.js';
 import Exam from "./exam.js";
 import GHelpWindow from "./ui/help.js"
 import GCore from './core.js';
+import "./ui/dragtag"
 
 let solve_code = `
 
@@ -25,6 +26,12 @@ window.onload = function (e) {
   let exam = new Exam();
   exam.visitCurQuestion();
   exam.init()
+
+  GCore.on("next_question", () => {
+    if(exam.hasNextQuestion()) {
+      editor_core.setValue(solve_code);
+    }
+  })
 };
 
 window.GCore = GCore;

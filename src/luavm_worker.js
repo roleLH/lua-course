@@ -1,6 +1,9 @@
 
 import VMOutput from "./vm_output";
 
+let start_time = 0;
+let end_time = 0;
+
 class VMWorker {
   constructor(vm_output) {
     this.worker = null;
@@ -14,6 +17,16 @@ class VMWorker {
     this.code_timeout = 1000 * 10;
     this.running = null;
     this.timer = null;
+
+    this.onVMEvent("init_wasm", (data) => {
+      let ret = data || data.data;
+      if(ret && this.onresolve) {
+        return this.onresolve();
+      }
+      if(this.onreject) {
+        this.onreject("init wasm failed")
+      }
+    })
   }
 
   clearState() {
@@ -75,6 +88,9 @@ class VMWorker {
         // console.log(data.type, "clear timeout.");
         this.timer = null;
       }
+
+      let end = new Date().valueOf();
+      console.log(this.running, this.arg, end - start_time);
       let listeners = this.events[data.type];
       if(!listeners) {
         return this.onresolve(data); 
@@ -83,7 +99,12 @@ class VMWorker {
         cb(data.data);
       })        
     }
-    return this.run("reset");
+    return new Promise((resolve, reject) => {
+      this.onresolve = resolve;
+      this.onreject = reject;
+    }).then(() => {
+      return this.run("reset");
+    })
   }
   destoryVM() {
     if(!this.worker) {
@@ -110,18 +131,21 @@ class VMWorker {
     }
     this.ispending = true;
 
+    start_time = new Date().valueOf();
     this.running = fn_name;
+    this.arg = arg;
     this.worker.postMessage({
       type: fn_name,
       data: arg,
     });
-    this.timer = setTimeout(() => {
-      if(this.running === fn_name) {
-        this.onreject("timeout");
-        this.killVM();
-        return 
-      }
-    }, this.code_timeout)
+    // this.timer = setTimeout(() => {
+    //   if(this.running === fn_name) {
+    //     this.onreject("timeout");
+    //     this.killVM();
+    //     console.log(arg);
+    //     return 
+    //   }
+    // }, this.code_timeout)
     return new Promise((resolve, reject) => {
       this.onresolve = resolve;
       this.onreject = reject;

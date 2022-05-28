@@ -88,6 +88,7 @@ class JudgeCore {
       return this.worker.output.printErr(data);
     });
     this.onWorkerEvent("code_print", (data) => {
+      //  console.log(data);
       this.worker.output.print(data);
     });
     this.onWorkerEvent("question_ret", (data) => {
